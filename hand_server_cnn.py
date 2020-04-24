@@ -68,13 +68,12 @@ def main():
     while 1:
         if count >10:
             value_list = []
-            print('hi')
             count-=1
             Count.set_value(count)
-            time.sleep(1.5)
+            time.sleep(1.2)
         elif count>=0:
             frame = cap.read()[1]
-            frame = frame[:,200:450]
+            frame = frame[:,190:450]
             frame = cv2.resize(frame,(33*2,43*2))#,interpolation=cv2.INTER_NEAREST)
             gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
             #gray = cv2.GaussianBlur(gray,(5,5),0)
@@ -89,7 +88,6 @@ def main():
                 continue
             else:
                 if np.mean(thresh)<=30:
-                    print(np.mean(thresh))
                     time.sleep(0.35)
                 else:
                     start = time.time()

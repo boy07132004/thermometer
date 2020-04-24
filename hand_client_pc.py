@@ -9,25 +9,24 @@ class App:
     def show_id_temper(self):
         if self.times >0 and state == 'Done':
             temp_list = temp.get_value()
+
             if len(temp_list)>1:
-                print('IN',temp_list)
                 for i in range(len(temp_list)):
-                    print(f'{(-1)*(i+1)}--{temp_list[(-1)*(i+1)]}')
                     self.value = temp_list[(-1)*(i+1)]
                     if (self.value>31) and (self.value<37.3) :
                         self.Status['text'] = f'Welcome!!\n{self.ID_now} -- {self.value}℃\n下一位請刷卡'
                         with open('output.csv','a',newline='\n') as csv_file:
                             csv.writer(csv_file).writerow([self.ID_now,self.value])
-                        return
+                        break
                     elif (self.value>37.4) and (self.value<43):
                         self.Status['text'] = '體溫過高'
                         break
-                    else:
-                        pass
-                self.Status['text'] = '請重新刷卡量測'
+                    elif i==(len(temp_list)-1):
+                        self.Status['text'] = '請重新刷卡量測'
             else:
                 self.master.after(100,self.show_id_temper)
                 self.times-=1
+                return
             self.ID['state']='normal'
             self.ID.delete(0,'end')
         elif self.times>0 and state == 'Running':
@@ -77,9 +76,7 @@ class SubHandler(object):
         global state
         global temp
         try:
-            print('CH',val)
             if val == -1:
-                print(val,"----")
                 state = "Done"
         except Exception as e:
             print(e)

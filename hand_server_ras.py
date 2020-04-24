@@ -91,8 +91,8 @@ def main():
             # When client send (count = 11)
             # 1.Sleep 1.2 sec and initiate value_list
             # 2.Recognize frame 10 times by CNN
-            frame,thresh = Get_Frame(cap)
             if count >= 0:
+                frame,thresh = Get_Frame(cap)
                 if count > 10:
                     value_list = [0]
                     time.sleep(1.2)

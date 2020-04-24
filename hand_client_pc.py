@@ -5,23 +5,15 @@ import tkinter as tk
 from opcua import ua,Client
 
 
-
-value = 0
-now = 0
-
 class App:
     def show_id_temper(self):
-        times = 100
-        while times>0:
-            if now ==-1:
-                self.value = -99
-                self.value_list = temp.get_value()
-                print(self.value_list)
-                if len(self.value_list)<1:
-                    self.Status['text'] = '請重新刷卡量測'
-                else:
-                    for i in range(len(self.value_list)):
-                        self.value = self.value_list[(-1)*(i+1)]
+        while True:
+            if state == 'Running':
+                time.sleep(0.2)
+            elif state == 'Done' :
+                if len(temp_list)>1:
+                    for i in range(len(temp_list)):
+                        self.value = temp_list[(-1)*(i+1)]
                         if (self.value>31) and (self.value<37.3) :
                             self.Status['text'] = f'Welcome!!\n{self.ID_now} -- {self.value}℃\n下一位請刷卡'
                             with open('output.csv','a',newline='\n') as csv_file:
@@ -32,18 +24,16 @@ class App:
                             break
                         else:
                             pass
-
-                if (self.value >43) or (self.value<=31):
-                    self.Status['text'] = '請重新刷卡量測'
+                else:
+                    self.Status['text'] = '請重新刷卡量測'   
                 break
-            else:
-                times-=1
-                time.sleep(0.1)
         self.ID['state']='normal'
         self.ID.delete(0,'end')
                 
 
     def detect(self,event=None):
+        temp_list = []
+        state = "Running"
         count.set_value(11)
         self.ID_now = self.ID.get()
         self.master.after(1300,self.show_id_temper)
@@ -53,8 +43,8 @@ class App:
 
     def __init__(self,master):
         global count
-        global temp
-        global now
+        global state
+        global temp_list
         self.value = 0
         self.master = master
         self.master.geometry("500x500")
@@ -75,8 +65,10 @@ class App:
 class SubHandler(object):
     def datachange_notification(self, node, val, data):
         try:
-            global now
-            now = val
+            global temp_list
+            temp_list = val
+            global state
+            state = "Done"
         except Exception as e:
             print(e)
 
@@ -107,7 +99,7 @@ if __name__ == "__main__":
     count = client.get_node("ns=2;i=3")
     handler = SubHandler()
     sub = client.create_subscription(500, handler)
-    handle = sub.subscribe_data_change(count)
+    handle = sub.subscribe_data_change(temp)
     main()
     client.disconnect()
     announcement('End')

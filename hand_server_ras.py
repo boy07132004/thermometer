@@ -78,11 +78,11 @@ def Get_Frame(cap):
 
 def main():
     global count
-    
+    value_list = [0]
     if args.show_mode:
         while 1:
             frame,thresh = Get_Frame(cap)
-            cv2.imshow('gray',gray)
+            cv2.imshow('frame',frame)
             cv2.imshow('thr',thresh)
             if cv2.waitKey(1) and 0xFF == ord('q'):
                 break
@@ -90,42 +90,46 @@ def main():
         while 1:
             # When client send (count = 11)
             # 1.Sleep 1.2 sec and initiate value_list
-            # 2.Get frame 11 times and recognize frame by CNN
+            # 2.Recognize frame 10 times by CNN
+            frame,thresh = Get_Frame(cap)
             if count >= 0:
                 if count > 10:
-                    value_list = []
+                    value_list = [0]
                     time.sleep(1.2)
                 elif count>0:
-                    frame,thresh = Get_Frame(cap)
                     if np.mean(thresh)<=30:
                         time.sleep(0.35)
+                        value_list.append(0)
                     else:
-                        start = time.time()
+                        #start = time.time()
                         imgs = Separate(thresh)
                         predict_list = my_model.predict(imgs)
                         predict_ans = predict_list.argmax(axis=1)
                         value = int("".join(str(x) for x in predict_ans))/10
                         value_list.append(value)
                         #print(f'cost time {time.time()-start}s')
-                    else:
-                        Temp.set_value(value_list) 
+                elif count == 0:
+                    print('set',value_list)
+                    Temp.set_value(value_list)
+                print(f'{count}')
                 count-=1
                 Count.set_value(count)
             else:
-                time.sleep(0.05)
+                time.sleep(0.5)
             count = Count.get_value()
 
 if __name__ == '__main__':
     if args.show_mode == False:
         server = Server()
-        server.set_endpoint("opc.tcp://192.168.0.101:4840")
-        #server.set_endpoint("opc.tcp://172.20.10.7:4840")
+        #server.set_endpoint("opc.tcp://192.168.0.101:4840")
+        server.set_endpoint("opc.tcp://172.20.10.7:4840")
         obj    = server.get_objects_node()
         uri    = server.register_namespace("ML6A01")
         Thermo = obj.add_object(uri,"Thermometer")
         Temp   = Thermo.add_variable(uri,"Temperature",[''])
         Count  = Thermo.add_variable(uri,"Count",count)
         Count.set_writable()
+        Temp.set_writable()
         server.start()
     
     main()

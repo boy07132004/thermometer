@@ -7,11 +7,11 @@
 * hand_client_pc.py
 
 \
-[用途]\
+#### `[用途]`
 將額溫槍上裝設樹莓派及相機，透過辨識額溫槍上的數字紀錄每個人的額溫數據
 
 
-[實照]\
+#### `[實照]`
 \
 <img src="https://github.com/boy07132004/thermometer/blob/master/photo/IMG_2297.JPG" width="30%" height="30%">
 <img src="https://github.com/boy07132004/thermometer/blob/master/photo/IMG_2295.JPG" width="30%" height="30%">

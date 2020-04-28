@@ -10,10 +10,8 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument("-s","--show",type=bool,nargs='?',const="True",dest="show_mode",default=False)
 args = parser.parse_args()
-count = 2
-if args.show_mode==False:
-    from keras.models import load_model
-    my_model = load_model(r'/home/pi/Desktop/thermometer/model_CNN_32x32.h5')
+count = -99
+
 
 def Separate(img_g):
     img_list = []
@@ -117,7 +115,7 @@ def main():
             else:
                 time.sleep(0.5)
             count = Count.get_value()
-
+    
 if __name__ == '__main__':
     if args.show_mode == False:
         server = Server()
@@ -131,6 +129,8 @@ if __name__ == '__main__':
         Count.set_writable()
         Temp.set_writable()
         server.start()
+        from keras.models import load_model
+        my_model = load_model(r'/home/pi/Desktop/thermometer/model_CNN_32x32.h5')
     
     main()
     if args.show_mode == False:

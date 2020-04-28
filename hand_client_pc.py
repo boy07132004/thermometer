@@ -92,6 +92,12 @@ def announcement(word):
 def main():
     root = tk.Tk()
     app  = App(root)
+    while True:
+        if count == -99:
+            print('Waiting...')
+            time.sleep(0.5)
+        else:
+            break
     root.mainloop()
     print('end')
 

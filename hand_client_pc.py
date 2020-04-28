@@ -9,7 +9,6 @@ class App:
     def show_id_temper(self):
         if self.times >0 and state == 'Done':
             temp_list = temp.get_value()
-
             if len(temp_list)>1:
                 for i in range(len(temp_list)):
                     self.value = temp_list[(-1)*(i+1)]
@@ -32,7 +31,6 @@ class App:
         elif self.times>0 and state == 'Running':
             self.times-=1
             self.master.after(100,self.show_id_temper)
-            self.Status['text'] = '2'
         else:
             self.Status['text'] = '請重新刷卡量測'
             self.ID['state']='normal'
@@ -74,7 +72,6 @@ class App:
 class SubHandler(object):
     def datachange_notification(self, node, val, data):
         global state
-        global temp
         try:
             if val == -1:
                 state = "Done"

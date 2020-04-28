@@ -119,8 +119,8 @@ def main():
 if __name__ == '__main__':
     if args.show_mode == False:
         server = Server()
-        #server.set_endpoint("opc.tcp://192.168.0.101:4840")
-        server.set_endpoint("opc.tcp://172.20.10.7:4840")
+        server.set_endpoint("opc.tcp://192.168.0.101:4840")
+        #server.set_endpoint("opc.tcp://172.20.10.7:4840")
         obj    = server.get_objects_node()
         uri    = server.register_namespace("ML6A01")
         Thermo = obj.add_object(uri,"Thermometer")
@@ -131,6 +131,8 @@ if __name__ == '__main__':
         server.start()
         from keras.models import load_model
         my_model = load_model(r'/home/pi/Desktop/thermometer/model_CNN_32x32.h5')
+        print('start')
+        Count.set_value(2)
     
     main()
     if args.show_mode == False:

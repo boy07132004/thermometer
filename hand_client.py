@@ -1,4 +1,5 @@
 import cv2
+import csv
 import time
 import numpy as np
 import tkinter as tk
@@ -11,33 +12,64 @@ parser = ArgumentParser()
 parser.add_argument("-g","--gpu",type=bool,nargs='?',const=True,default=False,dest='gpu')
 args = parser.parse_args()
 value = 0
+now = 0
 
 class App:
-    def show_id_temper(self,event = None):
-        self.start = time.time()
-        self.imgs = Separate(img)
-        self.predict_list = my_model.predict(self.imgs)
-        self.predict_ans = self.predict_list.argmax(axis=1)
-        self.value = int("".join(str(x) for x in self.predict_ans))/10
-        print(f'ans ------- {self.predict_ans}')
-        print(f'value ------- {self.value}')
-        if (self.value>31) and (self.value<37.3):
-            self.Status['text'] = f'Welcome!!\n{self.ID.get()} -- {self.predict_ans}℃\n下一位請刷卡'
-        else:
-            self.Status['text'] = f'Wait!!\nTemperature -- {self.value}℃'
-        print(f'cost time {time.time()-self.start}s')
+    def show_id_temper(self):
+        times = 100
+        value_list = []
+        while times>0:
+            if (now >6 and now <8) or (now == -1):
+                self.img = np.array(temp.get_value(),dtype='uint8')
+                self.start = time.time()
+                self.imgs = Separate(self.img)
+                self.predict_list = my_model.predict(self.imgs)
+                self.predict_ans = self.predict_list.argmax(axis=1)
+                self.value = int("".join(str(x) for x in self.predict_ans))/10
+                print(f'cost time {time.time()-self.start}s ---{self.value}')
+                if self.value>24:value_list.append(self.value)
+                # backup for last value error
+                if (now != -1):continue
+                # check value
+                if (self.value>31) and (self.value<37.3):
+                    self.Status['text'] = f'Welcome!!\n{self.ID_now} -- {value_list[-1]}℃\n下一位請刷卡'
+                    with open('output.csv','a',newline='\n') as csv_file:
+                        csv.writer(csv_file).writerow([self.ID_now,value_list,value_list[-1]])
+                else:
+                    #self.Status['text'] = f'Wait!!\nTemperature -- {self.value}℃'
+                    self.Status['text'] = '請重新刷卡量測'
+                    cv2.imwrite(f"{time.time()}.png",self.img)
+                break
+            else:
+                times-=1
+                time.sleep(0.1)
+                self.Status['text'] = '請重新刷卡量測'
+        self.ID['state']='normal'
         self.ID.delete(0,'end')
+                
+
+    def detect(self,event=None):
+        count.set_value(20)
+        self.ID_now = self.ID.get()
+        self.master.after(1300,self.show_id_temper)
+        self.Status['text'] = '量測中請稍後'
+        self.ID['state'] = 'disabled'
+        
     
     def save_img(self):
-        cv2.imwrite(f"{time.time()//100000}.png",img)
+        cv2.imwrite(f"{time.ctime()//100000}.png",self.img)
+        print(self.predict_ans)
     
     def __init__(self,master):
-        global img
+        global count
+        global temp
+        global now
         self.value = 0
-        master.geometry("500x500")
-        self.Frame = tk.Frame(master)
+        self.master = master
+        self.master.geometry("500x500")
+        self.Frame = tk.Frame(self.master)
         self.ID = tk.Entry(self.Frame)
-        self.ID.bind('<Return>',self.show_id_temper)
+        self.ID.bind('<Return>',self.detect)
         self.ID.pack()
         self.Status = tk.Label(
             self.Frame,
@@ -52,9 +84,10 @@ class App:
 class SubHandler(object):
     def datachange_notification(self, node, val, data):
         try:
-            global img
+            global now
             #announcement("New data change")
-            img = np.array(val,dtype='uint8')             
+            now = val
+            print(now)
         except Exception as e:
             print(e)
 
@@ -142,9 +175,10 @@ if __name__ == "__main__":
     client.connect()
     announcement('Connected')
     temp = client.get_node("ns=2;i=2")
+    count = client.get_node("ns=2;i=3")
     handler = SubHandler()
     sub = client.create_subscription(500, handler)
-    handle = sub.subscribe_data_change(temp)
+    handle = sub.subscribe_data_change(count)
     main()
     client.disconnect()
     announcement('End')

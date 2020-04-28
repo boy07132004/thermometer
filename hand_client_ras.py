@@ -46,8 +46,8 @@ class App:
     def detect(self,event=None):
         count.set_value(11)
         self.ID_now = self.ID.get()
-        self.master.after(1300,self.show_id_temper)
-        self.Status['text'] = '量測中請稍後'
+        self.master.after(1000,self.show_id_temper)
+        self.Status['text'] = '量測中請稍候'
         self.ID['state'] = 'disabled'
         
 
@@ -57,17 +57,17 @@ class App:
         global now
         self.value = 0
         self.master = master
-        self.master.geometry("500x500")
+        self.master.geometry("1800x900")
         self.Frame = tk.Frame(self.master)
-        self.Label = tk.Label(self.Frame,text='Made in ML6A01',font = ("Verdana",15))
-        self.Label.pack()
-        self.ID = tk.Entry(self.Frame)
+        self.Label = tk.Label(self.Frame,text='Made in ML6A01',font = ("Calibri",12))
+        #self.Label.pack()
+        self.ID = tk.Entry(self.Frame,font="Calibri 60",justify="center")
         self.ID.bind('<Return>',self.detect)
         self.ID.pack()
         self.Status = tk.Label(
             self.Frame,
-            text = '',
-            font = ("Verdana",40))
+            text = 'Welcome!!\n請刷卡',
+            font = ("Calibri",100))
         self.Status.pack()
         self.Frame.pack()
 

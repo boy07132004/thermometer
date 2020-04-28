@@ -93,9 +93,9 @@ def main():
     root = tk.Tk()
     app  = App(root)
     while True:
-        if count == -99:
+        if count.get_value() == -99:
             print('Waiting...')
-            time.sleep(0.5)
+            time.sleep(1)
         else:
             break
     root.mainloop()
@@ -107,8 +107,8 @@ if __name__ == "__main__":
     print('='*18)
     print('Made in AUO_ML6A01')
     print('='*18)
-    #client = Client("opc.tcp://192.168.0.101:4840/")
-    client = Client("opc.tcp://172.20.10.7:4840/")
+    client = Client("opc.tcp://192.168.0.101:4840/")
+    #client = Client("opc.tcp://172.20.10.7:4840/")
     client.connect()
     announcement('Connected')
     temp = client.get_node("ns=2;i=2")

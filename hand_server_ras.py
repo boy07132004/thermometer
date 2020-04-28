@@ -121,8 +121,8 @@ def main():
 if __name__ == '__main__':
     if args.show_mode == False:
         server = Server()
-        #server.set_endpoint("opc.tcp://192.168.0.101:4840")
-        server.set_endpoint("opc.tcp://172.20.10.7:4840")
+        server.set_endpoint("opc.tcp://192.168.0.101:4840")
+        #server.set_endpoint("opc.tcp://172.20.10.7:4840")
         obj    = server.get_objects_node()
         uri    = server.register_namespace("ML6A01")
         Thermo = obj.add_object(uri,"Thermometer")

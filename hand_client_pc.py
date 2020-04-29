@@ -1,4 +1,3 @@
-import cv2
 import csv
 import time
 import tkinter as tk
@@ -78,14 +77,6 @@ class SubHandler(object):
         except Exception as e:
             print(e)
 
-
-def announcement(word):
-    print('='*10,time.ctime(),'='*10)
-    print(word)
-    print('-'*10)
-
-
-
 def main():
     root = tk.Tk()
     app  = App(root)
@@ -107,7 +98,7 @@ if __name__ == "__main__":
     client = Client("opc.tcp://192.168.0.101:4840/")
     #client = Client("opc.tcp://172.20.10.7:4840/")
     client.connect()
-    announcement('Connected')
+    print('Connected')
     temp = client.get_node("ns=2;i=2")
     count = client.get_node("ns=2;i=3")
     handler = SubHandler()
@@ -115,7 +106,7 @@ if __name__ == "__main__":
     handle = sub.subscribe_data_change(count)
     main()
     client.disconnect()
-    announcement('End')
+    print('End')
     
     
     

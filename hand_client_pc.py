@@ -11,14 +11,19 @@ class App:
             if len(temp_list)>1:
                 for i in range(len(temp_list)):
                     self.value = temp_list[(-1)*(i+1)]
-                    if (self.value>31) and (self.value<37.3) :
-                        self.Status['text'] = f'Welcome!!\n{self.ID_now} -- {self.value}℃\n下一位請刷卡'
-                        with open('output.csv','a',newline='\n') as csv_file:
-                            csv.writer(csv_file).writerow([self.ID_now,self.value])
-                        break
-                    elif (self.value>37.4) and (self.value<43):
-                        self.Status['text'] = '體溫過高'
-                        break
+                    if (self.value>31) and (self.value<43) :
+                        self.timenow = time.strftime('%Y-%m-%d-%H-%M-%S',time.localtime())
+                        try:
+                            with open(f"{self.timenow[:10]}.csv"):pass
+                        except:
+                            with open(f"{self.timenow[:10]}.csv",'w'):pass
+                        if self.value>37.4:
+                            self.Status['text'] = '體溫過高'
+                        else:
+                            self.Status['text'] = f'Welcome!!\n{self.ID_now} -- {self.value}℃\n下一位請刷卡'
+                        with open(f"{self.timenow[:10]}.csv",'a',newline='\n') as csv_file:
+                            csv.writer(csv_file).writerow([self.timenow[-8:],self.ID_now,self.value])
+                        break 
                     elif i==(len(temp_list)-1):
                         self.Status['text'] = '請重新刷卡量測'
             else:

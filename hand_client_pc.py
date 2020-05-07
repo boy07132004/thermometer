@@ -9,6 +9,7 @@ class App:
         if self.times >0 and state == 'Done':
             temp_list = temp.get_value()
             if len(temp_list)>1:
+                print(temp_list)
                 for i in range(len(temp_list)):
                     self.value = temp_list[(-1)*(i+1)]
                     if (self.value>31) and (self.value<43) :
@@ -44,7 +45,7 @@ class App:
     def detect(self,event=None):
         self.times = 100
         state = "Running"
-        count.set_value(11)
+        count.set_value(5)
         temp.set_value([0])
         self.ID_now = self.ID.get()
         self.master.after(1000,self.show_id_temper)
@@ -53,15 +54,12 @@ class App:
         
 
     def __init__(self,master):
-        global count
-        global state
-        global temp
         self.value = 0
         self.master = master
         self.master.geometry("1800x900")
         self.Frame = tk.Frame(self.master)
-        self.Label = tk.Label(self.Frame,text='Made in ML6A01',font = ("Calibri",12))
-        #self.Label.pack()
+        self.Label = tk.Label(self.Frame,text='')#'Made in ML6A01',font = ("Calibri",12))
+        self.Label.pack()
         self.ID = tk.Entry(self.Frame,font="Calibri 60",justify="center")
         self.ID.bind('<Return>',self.detect)
         self.ID.pack()

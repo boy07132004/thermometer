@@ -45,7 +45,7 @@ class App:
     def detect(self,event=None):
         self.times = 100
         state = "Running"
-        count.set_value(5)
+        count.set_value(3) #=======================
         temp.set_value([0])
         self.ID_now = self.ID.get()
         self.master.after(1000,self.show_id_temper)
@@ -85,7 +85,7 @@ def main():
     app  = App(root)
     while True:
         if count.get_value() == -99:
-            print('Waiting...')
+            print('Model loading...')
             time.sleep(1)
         else:
             break
@@ -100,7 +100,13 @@ if __name__ == "__main__":
     print('='*18)
     client = Client("opc.tcp://192.168.0.101:4840/")
     #client = Client("opc.tcp://172.20.10.7:4840/")
-    client.connect()
+    while True:
+        try:
+            client.connect()
+            break
+        except:
+            print("Can't find Raspberry Pi...")
+            time.sleep(1)
     print('Connected')
     temp = client.get_node("ns=2;i=2")
     count = client.get_node("ns=2;i=3")

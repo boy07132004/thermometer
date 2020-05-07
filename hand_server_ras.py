@@ -61,15 +61,14 @@ def Separate(img_g):
         print(e)
     return np.array(img_list).astype('float32')/255.
 
-def Get_Frame(cap):
-    frame = cap.read()[1]
+def Get_Frame(cap,times):
+    for i in range(times):
+        frame = cap.read()[1]
     frame = frame[:,190:450]
     frame = cv2.resize(frame,(33*2,43*2))
     gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-    #gray = cv2.GaussianBlur(gray,(5,5),0)
     thresh = cv2.threshold(gray,35,255,cv2.THRESH_BINARY_INV)[1]
     thresh = np.rot90(thresh,3)
-    #thresh = cv2.threshold(blur,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU )[1]
     return (frame,thresh)
     
     
@@ -79,25 +78,22 @@ def main():
     value_list = [0]
     if args.show_mode:
         while 1:
-            frame,thresh = Get_Frame(cap)
+            frame,thresh = Get_Frame(cap,1)
             cv2.imshow('frame',frame)
             cv2.imshow('thr',thresh)
             if cv2.waitKey(1) and 0xFF == ord('q'):
                 break
     else:
         while 1:
-            # When client send (count = 11)
-            # 1.Sleep 1.2 sec and initiate value_list
-            # 2.Recognize frame 10 times by CNN
             if count >= 0:
-                frame,thresh = Get_Frame(cap)
-                if count > 10:
-                    value_list = [0]
-                    time.sleep(1.2)
-                elif count>0:
+                value_list = [0]
+                time.sleep(0.7)
+                frame,thresh = Get_Frame(cap,7)
+                while count>=0:
+                    frame,thresh = Get_Frame(cap,2)
                     if np.mean(thresh)<=30:
                         time.sleep(0.35)
-                        value_list.append(0)
+                        value_list.append(-1)
                     else:
                         #start = time.time()
                         imgs = Separate(thresh)
@@ -106,14 +102,17 @@ def main():
                         value = int("".join(str(x) for x in predict_ans))/10
                         value_list.append(value)
                         #print(f'cost time {time.time()-start}s')
-                elif count == 0:
-                    print('set',value_list)
-                    Temp.set_value(value_list)
-                print(f'{count}')
-                count-=1
-                Count.set_value(count)
-            else:
-                time.sleep(0.5)
+                    if count == 0:
+                        print('set',value_list)
+                        Temp.set_value(value_list)
+                    print(f'{count}')
+                    count-=1
+                    Count.set_value(count)
+            #
+            elif count == -66:
+                frame,thresh = Get_Frame(cap,2)
+                Temp.set_value(thresh.tolist())
+            time.sleep(0.5)
             count = Count.get_value()
     
 if __name__ == '__main__':
